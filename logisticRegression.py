@@ -20,6 +20,9 @@ class Data():
         self.Y_test = np.zeros(N)
 
 class LogisticRegression():
+    """ Training is done using gradient descent
+        See http://cs229.stanford.edu/notes/cs229-notes1.pdf for how the gradient is computed.
+    """
     def update(self, thetas, x, y, d, N, alpha=0.1):
         new_thetas = np.zeros((d))
         theta_old = thetas
