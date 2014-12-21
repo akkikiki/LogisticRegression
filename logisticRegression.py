@@ -3,6 +3,8 @@ import numpy as np
 from math import log
 
 def sigmoid(x, theta):
+    #print x 
+    #print theta
     return 1.0 / (1.0 + np.exp(-np.dot(theta.transpose(), x)))
 
 def cost(x, y):
@@ -23,19 +25,20 @@ class LogisticRegression():
     """ Training is done using gradient descent
         See http://cs229.stanford.edu/notes/cs229-notes1.pdf for how the gradient is computed.
     """
+
+    def update_matrix(self, thetas, x, y, d, N, alpha=0.1):
+        new_thetas = np.zeros((d))
+        for i in range(N):
+            new_thetas = thetas + alpha * (y[i] - sigmoid(x[i,:], thetas)) * x[i,:]
+
+        return new_thetas
+
+
     def update(self, thetas, x, y, d, N, alpha=0.1):
         new_thetas = np.zeros((d))
-        theta_old = thetas
-        for j in range(thetas.size):
-            #theta_old = thetas[j]
-            second_expression = 0
-            theta = thetas[j]
-            for i in range(N):
-                print sigmoid(x[i], theta_old)
-                second_expression += (sigmoid(x[i], theta_old) - y[i]) * x[i, j]
-            theta_new = thetas[j] - alpha * second_expression
-            #print theta_new
-            new_thetas[j] = theta_new
+        for i in range(N):
+            for j in range(thetas.size):
+                new_thetas[j] = thetas[j] - alpha * (sigmoid(x[i, :], thetas) - y[i]) * x[i, j]
 
         return new_thetas
 
@@ -44,17 +47,27 @@ class LogisticRegression():
         new_thetas = old_thetas + 1
         while old_thetas.all() != new_thetas.all():
             tmp_new_thetas = self.update(old_thetas, x, y, d, N)
+            #tmp_new_thetas = self.update_matrix(old_thetas, x, y, d, N)
             old_thetas = new_thetas
             new_thetas = tmp_new_thetas
+            #print new_thetas
         return new_thetas
 
 
 if __name__ == '__main__':
     LR = LogisticRegression()
-    X_train = np.array([[1, 2, 3], [2, 4, 8], [2, 2, 2]])
-    Y_train = np.array([[1], [1], [0]])
+    X_train = np.array([[1, 2, 3], 
+                        [2, 4, 8], 
+                        [2, 4, 8], 
+                        [2, 2, 2], 
+                        [2, 5, 9]])
+    Y_train = np.array([[1],
+                        [1], 
+                        [1], 
+                        [0], 
+                        [1]])
     d = 3
-    N = 2
+    N = 5
     thetas = np.zeros(d)
     
     print LR.train(thetas, X_train, Y_train, d, N)
